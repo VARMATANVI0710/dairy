@@ -1,0 +1,33 @@
+{
+  "name": "login-signup-system",
+  "version": "1.0.0",
+  "description": "A complete login and signup system with database",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "init-db": "node scripts/initDb.js",
+    "test-db": "node scripts/testConnection.js",
+    "setup": "npm run init-db && npm start"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "passport-local-mongoose": "^8.0.0",
+    "express-session": "^1.17.3",
+    "ejs": "^3.1.9",
+    "bcrypt": "^5.1.0",
+    "connect-flash": "^0.1.1",
+    "method-override": "^3.0.0",
+    "dotenv": "^16.3.1",
+    "joi": "^17.9.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["login", "signup", "authentication", "express", "mongodb"],
+  "author": "Your Name",
+  "license": "MIT"
+}

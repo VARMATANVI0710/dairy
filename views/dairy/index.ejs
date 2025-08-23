@@ -1,0 +1,81 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="mb-4">My Dairy Entries</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="/dairy/new" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Entry
+            </a>
+        </div>
+    </div>
+
+    <% if (dairyEntries && dairyEntries.length > 0) { %>
+        <div class="row">
+            <% dairyEntries.forEach(entry => { %>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="/dairy/<%= entry._id %>" class="text-decoration-none">
+                                    <%= entry.title %>
+                                </a>
+                            </h5>
+                            <p class="card-text text-muted">
+                                <%= entry.content.length > 150 ? entry.content.substring(0, 150) + '...' : entry.content %>
+                            </p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-primary"><%= entry.mood %></span>
+                                <% if (entry.weather) { %>
+                                    <small class="text-muted">
+                                        <i class="fas fa-cloud"></i> <%= entry.weather %>
+                                    </small>
+                                <% } %>
+                            </div>
+                            
+                            <% if (entry.tags && entry.tags.length > 0) { %>
+                                <div class="mb-2">
+                                    <% entry.tags.forEach(tag => { %>
+                                        <span class="badge bg-secondary me-1"><%= tag %></span>
+                                    <% }) %>
+                                </div>
+                            <% } %>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar"></i> 
+                                    <%= new Date(entry.createdAt).toLocaleDateString() %>
+                                </small>
+                                <div>
+                                    <a href="/dairy/<%= entry._id %>/edit" class="btn btn-sm btn-outline-primary me-2">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <form action="/dairy/<%= entry._id %>?_method=DELETE" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                onclick="return confirm('Are you sure you want to delete this entry?')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <div class="text-center py-5">
+            <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+            <h3 class="text-muted">No dairy entries yet</h3>
+            <p class="text-muted">Start writing your thoughts and experiences!</p>
+            <a href="/dairy/new" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus"></i> Write Your First Entry
+            </a>
+        </div>
+    <% } %>
+</div>
+
+<%- include('../partials/footer') %>

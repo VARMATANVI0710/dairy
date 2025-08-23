@@ -1,0 +1,77 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0"><%= dairyEntry.title %></h2>
+                    <div>
+                        <a href="/dairy/<%= dairyEntry._id %>/edit" class="btn btn-outline-primary btn-sm me-2">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <form action="/dairy/<%= dairyEntry._id %>?_method=DELETE" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                    onclick="return confirm('Are you sure you want to delete this entry?')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <span class="badge bg-primary fs-6"><%= dairyEntry.mood %></span>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar"></i> 
+                                <%= new Date(dairyEntry.createdAt).toLocaleDateString('en-US', { 
+                                    weekday: 'long', 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric' 
+                                }) %>
+                            </small>
+                        </div>
+                    </div>
+
+                    <% if (dairyEntry.weather) { %>
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-cloud"></i> Weather: <%= dairyEntry.weather %>
+                            </small>
+                        </div>
+                    <% } %>
+
+                    <div class="mb-4">
+                        <p class="card-text" style="white-space: pre-wrap; line-height: 1.8;">
+                            <%= dairyEntry.content %>
+                        </p>
+                    </div>
+
+                    <% if (dairyEntry.tags && dairyEntry.tags.length > 0) { %>
+                        <div class="mb-3">
+                            <strong>Tags:</strong>
+                            <% dairyEntry.tags.forEach(tag => { %>
+                                <span class="badge bg-secondary me-1"><%= tag %></span>
+                            <% }) %>
+                        </div>
+                    <% } %>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-clock"></i> 
+                            Last updated: <%= new Date(dairyEntry.updatedAt).toLocaleDateString() %>
+                        </small>
+                        <a href="/dairy" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Entries
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

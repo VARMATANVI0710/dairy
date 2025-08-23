@@ -1,0 +1,102 @@
+<%- include('partials/header') %>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h2 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>Sign Up for Personal Dairy
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form action="/signup" method="post" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username *</label>
+                            <input name="username" id="username" type="text" class="form-control" required 
+                                   placeholder="Choose a unique username">
+                            <div class="invalid-feedback">
+                                Username must be 3-30 alphanumeric characters.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input name="email" id="email" type="email" class="form-control" required
+                                   placeholder="Enter your email address">
+                            <div class="invalid-feedback">
+                                Please provide a valid email address.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password *</label>
+                            <input name="password" id="password" type="password" class="form-control" required
+                                   placeholder="Create a strong password">
+                            <div class="form-text">
+                                Password must be at least 6 characters with uppercase, lowercase, and number.
+                            </div>
+                            <div class="invalid-feedback">
+                                Password must meet the requirements above.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password *</label>
+                            <input name="confirmPassword" id="confirmPassword" type="password" class="form-control" required
+                                   placeholder="Confirm your password">
+                            <div class="invalid-feedback">
+                                Passwords must match.
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Create Account
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-3">
+                        <p class="text-muted">Already have an account? 
+                            <a href="/login" class="text-decoration-none">Login here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
+                // Check if passwords match
+                var password = document.getElementById('password');
+                var confirmPassword = document.getElementById('confirmPassword');
+                if (password.value !== confirmPassword.value) {
+                    confirmPassword.setCustomValidity("Passwords don't match");
+                    event.preventDefault();
+                    event.stopPropagation();
+                } else {
+                    confirmPassword.setCustomValidity('');
+                }
+                
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
+
+<%- include('partials/footer') %>
