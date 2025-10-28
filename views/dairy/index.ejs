@@ -3,12 +3,15 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-8">
-            <h1 class="mb-4">My Dairy Entries</h1>
+            <h1 class="mb-4">Blog Posts</h1>
+            <p class="text-muted">Welcome to the blog. Read public posts from our community—even without logging in.</p>
         </div>
         <div class="col-md-4 text-end">
-            <a href="/dairy/new" class="btn btn-primary">
-                <i class="fas fa-plus"></i> New Entry
-            </a>
+            <% if (currentUser) { %>
+                <a href="/blogs/new" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> New Entry
+                </a>
+            <% } %>
         </div>
     </div>
 
@@ -19,7 +22,7 @@
                     <div class="card h-100 shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">
-                                <a href="/dairy/<%= entry._id %>" class="text-decoration-none">
+                                <a href="/blogs/<%= entry._id %>" class="text-decoration-none">
                                     <%= entry.title %>
                                 </a>
                             </h5>
@@ -49,17 +52,9 @@
                                     <i class="fas fa-calendar"></i> 
                                     <%= new Date(entry.createdAt).toLocaleDateString() %>
                                 </small>
-                                <div>
-                                    <a href="/dairy/<%= entry._id %>/edit" class="btn btn-sm btn-outline-primary me-2">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </a>
-                                    <form action="/dairy/<%= entry._id %>?_method=DELETE" method="POST" class="d-inline">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" 
-                                                onclick="return confirm('Are you sure you want to delete this entry?')">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
-                                    </form>
-                                </div>
+                                <small class="text-muted">
+                                    by <%= entry.author && entry.author.username ? entry.author.username : 'Unknown' %>
+                                </small>
                             </div>
                         </div>
                     </div>
@@ -69,11 +64,13 @@
     <% } else { %>
         <div class="text-center py-5">
             <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
-            <h3 class="text-muted">No dairy entries yet</h3>
-            <p class="text-muted">Start writing your thoughts and experiences!</p>
-            <a href="/dairy/new" class="btn btn-primary btn-lg">
-                <i class="fas fa-plus"></i> Write Your First Entry
-            </a>
+            <h3 class="text-muted">No blog posts yet</h3>
+            <p class="text-muted">Be the first to share your thoughts and experiences.</p>
+            <% if (currentUser) { %>
+                <a href="/blogs/new" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus"></i> Write Your First Post
+                </a>
+            <% } %>
         </div>
     <% } %>
 </div>

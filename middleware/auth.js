@@ -16,18 +16,18 @@ async function isAuthor(req, res, next) {
         
         if (!dairyEntry) {
             req.flash('error', 'Dairy entry not found');
-            return res.redirect('/dairy');
+            return res.redirect('/blogs');
         }
         
         if (!dairyEntry.author.equals(req.user._id)) {
             req.flash('error', 'You can only edit your own dairy entries');
-            return res.redirect('/dairy');
+            return res.redirect('/blogs');
         }
         
         next();
     } catch (error) {
         req.flash('error', 'Error checking authorization');
-        res.redirect('/dairy');
+        res.redirect('/blogs');
     }
 }
 

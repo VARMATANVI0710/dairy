@@ -5,16 +5,17 @@ const User = require('../user');
 const { isLoggedIn, isAuthor } = require('../middleware/auth');
 const { validateDairyEntry } = require('../middleware/validation');
 
-// Index - Show all dairy entries for the logged-in user
-router.get('/', isLoggedIn, async (req, res) => {
+// Index - Public: Show all public dairy entries (blog posts)
+router.get('/', async (req, res) => {
     try {
-        const dairyEntries = await DairyEntry.find({ author: req.user._id })
+        const filter = { isPrivate: false };
+        const dairyEntries = await DairyEntry.find(filter)
             .sort({ createdAt: -1 })
             .populate('author', 'username');
         res.render('dairy/index', { dairyEntries });
     } catch (error) {
         req.flash('error', 'Error fetching dairy entries');
-        res.redirect('/dashboard');
+        res.redirect('/');
     }
 });
 
@@ -28,6 +29,8 @@ router.post('/', isLoggedIn, validateDairyEntry, async (req, res) => {
     try {
         const dairyEntry = new DairyEntry(req.body);
         dairyEntry.author = req.user._id;
+        // Normalize privacy checkbox: 'on' => true, absent => false
+        dairyEntry.isPrivate = req.body.isPrivate === 'on';
         
         // Process tags (split by comma and trim)
         if (req.body.tags) {
@@ -42,34 +45,35 @@ router.post('/', isLoggedIn, validateDairyEntry, async (req, res) => {
         });
         
         req.flash('success', 'Dairy entry created successfully!');
-        res.redirect('/dairy');
+        res.redirect('/blogs');
     } catch (error) {
         req.flash('error', 'Error creating dairy entry');
         res.redirect('/dairy/new');
     }
 });
 
-// Show - Show specific dairy entry
-router.get('/:id', isLoggedIn, async (req, res) => {
+// Show - Public: Show specific dairy entry if public, or if author
+router.get('/:id', async (req, res) => {
     try {
         const dairyEntry = await DairyEntry.findById(req.params.id)
             .populate('author', 'username');
         
         if (!dairyEntry) {
             req.flash('error', 'Dairy entry not found');
-            return res.redirect('/dairy');
+            return res.redirect('/blogs');
         }
         
-        // Check if user is the author
-        if (!dairyEntry.author._id.equals(req.user._id)) {
-            req.flash('error', 'You can only view your own dairy entries');
-            return res.redirect('/dairy');
+        // If private, only the author can view
+        const isAuthorViewing = req.user && dairyEntry.author && dairyEntry.author._id.equals(req.user._id);
+        if (dairyEntry.isPrivate && !isAuthorViewing) {
+            req.flash('error', 'This entry is private');
+            return res.redirect('/blogs');
         }
         
         res.render('dairy/show', { dairyEntry });
     } catch (error) {
         req.flash('error', 'Error fetching dairy entry');
-        res.redirect('/dairy');
+        res.redirect('/blogs');
     }
 });
 
@@ -80,7 +84,7 @@ router.get('/:id/edit', isLoggedIn, isAuthor, async (req, res) => {
         res.render('dairy/edit', { dairyEntry });
     } catch (error) {
         req.flash('error', 'Error fetching dairy entry');
-        res.redirect('/dairy');
+        res.redirect('/blogs');
     }
 });
 
@@ -88,7 +92,10 @@ router.get('/:id/edit', isLoggedIn, isAuthor, async (req, res) => {
 router.put('/:id', isLoggedIn, isAuthor, validateDairyEntry, async (req, res) => {
     try {
         const { id } = req.params;
-        const dairyEntry = await DairyEntry.findByIdAndUpdate(id, req.body, {
+        // Normalize privacy checkbox on update as well
+        const updateData = { ...req.body };
+        updateData.isPrivate = req.body.isPrivate === 'on';
+        const dairyEntry = await DairyEntry.findByIdAndUpdate(id, updateData, {
             new: true,
             runValidators: true
         });
@@ -100,10 +107,10 @@ router.put('/:id', isLoggedIn, isAuthor, validateDairyEntry, async (req, res) =>
         }
         
         req.flash('success', 'Dairy entry updated successfully!');
-        res.redirect(`/dairy/${dairyEntry._id}`);
+        res.redirect(`/blogs/${dairyEntry._id}`);
     } catch (error) {
         req.flash('error', 'Error updating dairy entry');
-        res.redirect(`/dairy/${req.params.id}/edit`);
+        res.redirect(`/blogs/${req.params.id}/edit`);
     }
 });
 
@@ -120,10 +127,10 @@ router.delete('/:id', isLoggedIn, isAuthor, async (req, res) => {
         await DairyEntry.findByIdAndDelete(id);
         
         req.flash('success', 'Dairy entry deleted successfully!');
-        res.redirect('/dairy');
+        res.redirect('/blogs');
     } catch (error) {
         req.flash('error', 'Error deleting dairy entry');
-        res.redirect('/dairy');
+        res.redirect('/blogs');
     }
 });
 

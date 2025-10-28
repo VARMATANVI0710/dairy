@@ -139,11 +139,11 @@ app.use((req, res, next) => {
 
 // Routes
 app.get('/', (req, res) => {
-    res.redirect('/login');
+    res.redirect('/blogs');
 });
 
-// Use dairy routes
-app.use('/dairy', dairyRoutes);
+// Use blog routes
+app.use('/blogs', dairyRoutes);
 
 // Login routes
 app.get('/login', (req, res) => {
